@@ -59,7 +59,7 @@ const getSigns = async (name, date, time, location) => {
   try {
     browser = await puppeteer.launch({
       headless: true,
-      args: ["--no-zygote", "--single-process"],
+      args: ["--no-zygote", "--single-process",'--no-sandbox','--disable-setuid-sandbox'],
     });
     const page = await browser.newPage();
     await page.goto("https://justastrologythings.com/pages/chart/");
