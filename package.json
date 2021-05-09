@@ -1,0 +1,16 @@
+{
+  "name": "chartstealer",
+  "version": "1.0.0",
+  "description": "",
+  "main": "main.js",
+  "scripts": {
+    "start": "node twitterbot.js"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "dependencies": {
+    "puppeteer": "^9.1.1",
+    "twitter": "^1.7.1"
+  }
+}
