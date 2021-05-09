@@ -53,59 +53,63 @@ const timeComposer = (data) => {
   return [firstFormat, parts[1]];
 };
 
-const getSigns = async (name,date,time,location) => {
-  console.log("Reversing...")
+const getSigns = async (name, date, time, location) => {
+  console.log("Reversing...");
   let browser;
-  try{
-   browser = await puppeteer.launch({
-    headless: true,
-    args: ["--no-zygote", "--single-process"],
-  });
-  const page = await browser.newPage();
-  await page.goto("https://justastrologythings.com/pages/chart/");
-  await page.waitForSelector('input[name="name"]');
-  await page.type('input[name="name"]', name);
-  const dateOfBirth = dateComposer(date);
-  await page.type('select[name="month"]', dateOfBirth[1]);
-  await page.type('select[name="day"]', dateOfBirth[0]);
-  await page.type('select[name="year"]', dateOfBirth[2]);
-  const formattedTime = timeComposer(time);
-  if (formattedTime == "Unknown") {
-    await page.click('input[name="timeUnknown"]');
-  } else {
-    await page.type('select[name="hour"]', formattedTime[0]);
-    await page.type('select[name="minute"]', formattedTime[1]);
-  }
-  await page.type("#search", location);
-  await page.waitForTimeout(2_000);
-  await page.keyboard.press("Enter");
-  await page.waitForTimeout(500);
-  await page.click('[type="submit"]');
-  const sun = await page.waitForSelector('a[href*="planets/Moon"].chartLink');
-  const sunText = await page.$$eval('a[href*="planets/Sun"].chartLink', elements => {
-    return elements[elements.length - 1].innerHTML;
-  });
-  const moonText = await page.$$eval(
-    'a[href*="planets/Moon"].chartLink',
-    (elements) => {
-      return elements[elements.length - 1].innerHTML;
+  try {
+    browser = await puppeteer.launch({
+      headless: true,
+      args: ["--no-zygote", "--single-process"],
+    });
+    const page = await browser.newPage();
+    await page.goto("https://justastrologythings.com/pages/chart/");
+    await page.waitForSelector('input[name="name"]');
+    await page.type('input[name="name"]', name);
+    const dateOfBirth = dateComposer(date);
+    await page.type('select[name="month"]', dateOfBirth[1]);
+    await page.type('select[name="day"]', dateOfBirth[0]);
+    await page.type('select[name="year"]', dateOfBirth[2]);
+    const formattedTime = timeComposer(time);
+    if (formattedTime == "Unknown") {
+      await page.click('input[name="timeUnknown"]');
+    } else {
+      await page.type('select[name="hour"]', formattedTime[0]);
+      await page.type('select[name="minute"]', formattedTime[1]);
     }
-  );
-  const risingText = formattedTime != "Unknown" ? await page.$$eval(
-    'a[href*="pages/rising"].chartLink',
-    (elements) => {
-      return elements[elements.length - 1].innerHTML;
-    }
-  ) : null;
-  await browser.close();
-  return {sun: sunText, moon: moonText, rising: risingText}
-  }catch(e){
+    await page.type("#search", location);
+    await page.waitForTimeout(3_500);
+    await page.keyboard.press("Enter");
+    await page.waitForTimeout(500);
+    await page.click('[type="submit"]');
+    const sun = await page.waitForSelector('a[href*="planets/Moon"].chartLink');
+    const sunText = await page.$$eval(
+      'a[href*="planets/Sun"].chartLink',
+      (elements) => {
+        return elements[elements.length - 1].innerHTML;
+      }
+    );
+    const moonText = await page.$$eval(
+      'a[href*="planets/Moon"].chartLink',
+      (elements) => {
+        return elements[elements.length - 1].innerHTML;
+      }
+    );
+    const risingText =
+      formattedTime != "Unknown"
+        ? await page.$$eval('a[href*="pages/rising"].chartLink', (elements) => {
+            return elements[elements.length - 1].innerHTML;
+          })
+        : null;
+    await browser.close();
+    return { sun: sunText, moon: moonText, rising: risingText };
+  } catch (e) {
+    console.log("Error: ", e);
     await browser.close();
     return undefined;
   }
-}
+};
 
 module.exports = {
   getSigns,
-  dateComposer
-}
+  dateComposer,
+};
