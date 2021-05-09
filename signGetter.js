@@ -74,7 +74,7 @@ const getSigns = async (name, date, time, location) => {
       await page.click('input[name="timeUnknown"]');
     } else {
       await page.type('select[name="hour"]', formattedTime[0]);
-      await page.type('select[name="minute"]', formattedTime[1]);
+      await page.type('select[name="minute"]', formattedTime[1])
     }
     await page.type("#search", location);
     await page.waitForTimeout(3_500);
