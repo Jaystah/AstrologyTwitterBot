@@ -1,11 +1,13 @@
 const Twitter = require('twitter');
+require('dotenv').config()
 let latestId = 1391462169166942200;
-const USERNAME = "Zodiac_Getter"
+const USERNAME = "Zodiac_Getter";
+let init = false;
 const client = new Twitter({
-    consumer_key: 'VKU8eZXn5fLExF4DGL40C6qaN',
-    consumer_secret: 'faeK1Cczz27sdczCHFcwTTrKHQwwVWdPLloWIuaZtH0UxGJSZM',
-    access_token_key: '1391408014524141571-1xmDMuywaV2ehxazu17Rwv725qMojs',
-    access_token_secret: 'w6NGpsL2DOweLlEyWSGPK3lZJTBqr7C2DanTrjVrRs6IA'
+    consumer_key: process.env.CONSUMER_KEY,
+    consumer_secret: process.env.CONSUMER_SECRET,
+    access_token_key: process.env.ACCESS_TOKEN_KEY ,
+    access_token_secret: process.env.ACCESS_TOKEN_SECRET 
 });
 
 const snooze = ms => new Promise((resolve) => setTimeout(resolve, ms));
@@ -13,13 +15,17 @@ const {dateComposer, getSigns} = require('./signGetter')
 
 ;(async()=>{
     mainLoop: while(true){
-        await snooze(10_000);
+        await snooze(20_000);
         try{
         const data = await client.get('statuses/mentions_timeline',{});
         const target = data[0];
         if(target.id != latestId && target.user.screen_name != USERNAME){
             console.log(target);
             latestId = target.id;
+            if(!init){
+                init = true;
+                continue mainLoop;
+            }
             const message = target.text.split(' ');
 
             if(message.length < 4){
